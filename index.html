@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Treinamento Comercial — Dr. Rogério Troian</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D0F14;--surface:#161A24;--surface2:#1E2332;--surface3:#242B3D;
+  --accent:#D4A843;--accent2:#2A7C6F;--accent3:#5B8DB8;
+  --text:#F0EDE6;--text2:#8A8FA8;--text3:#C4C0B8;
+  --danger-bg:#180E0E;--danger:#8B2E2E;--danger-text:#E8B4B4;
+  --green:#4CAF82;--green-bg:rgba(76,175,130,0.08);
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+}
+html,body{width:100%;height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* PROGRESS */
+#progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);transition:width .4s ease;z-index:200;box-shadow:0 0 10px rgba(212,168,67,.5)}
+
+/* COUNTER */
+#counter{position:fixed;bottom:22px;right:26px;font-size:11px;font-weight:500;color:var(--text2);letter-spacing:.08em;z-index:200}
+
+/* NAV */
+.nav{position:fixed;top:50%;transform:translateY(-50%);background:rgba(22,26,36,.85);border:1px solid rgba(212,168,67,.18);color:var(--accent);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:200;backdrop-filter:blur(8px)}
+.nav:hover{background:rgba(212,168,67,.15);border-color:var(--accent)}
+#prev{left:14px}#next{right:14px}
+
+/* SLIDE ENGINE */
+#deck{width:100%;height:100vh;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:52px 72px;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity .38s ease,transform .38s ease}
+.slide.active{opacity:1;pointer-events:all;transform:translateY(0)}
+
+/* SCROLLABLE BODY */
+.body{flex:1;overflow-y:auto;overflow-x:hidden}
+.body::-webkit-scrollbar{width:3px}
+.body::-webkit-scrollbar-thumb{background:rgba(212,168,67,.25);border-radius:2px}
+
+/* ── COVER ── */
+.cover{background:radial-gradient(ellipse at 30% 60%,rgba(212,168,67,.04) 0%,transparent 60%),#0D0F14;justify-content:center;gap:10px}
+.cover-eyebrow{font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);opacity:.8}
+.cover-title{font-family:var(--serif);font-size:clamp(56px,7.5vw,100px);line-height:1.04;font-weight:700;color:var(--text)}
+.cover-title em{color:var(--accent);font-style:normal}
+.cover-sub{font-size:clamp(15px,1.8vw,20px);color:var(--text2);font-weight:300;margin-top:4px}
+.cover-line{width:56px;height:2px;background:var(--accent);border-radius:2px;margin:20px 0 16px}
+.cover-tags{display:flex;gap:10px;flex-wrap:wrap}
+.cover-tag{font-size:11px;font-weight:500;letter-spacing:.08em;color:var(--text2);background:var(--surface2);padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.06)}
+.cover-deco{position:absolute;right:0;top:0;bottom:0;width:38%;border-left:1px solid rgba(212,168,67,.05);background:linear-gradient(180deg,rgba(212,168,67,.02) 0%,rgba(42,124,111,.03) 100%);pointer-events:none}
+.cover-ring{position:absolute;right:18%;top:50%;transform:translateY(-50%);width:260px;height:260px;border-radius:50%;border:1px solid rgba(212,168,67,.07)}
+.cover-ring2{position:absolute;right:23%;top:50%;transform:translateY(-50%);width:160px;height:160px;border-radius:50%;border:1px solid rgba(42,124,111,.09)}
+.cover-foot{position:absolute;bottom:24px;left:72px;font-size:12px;color:var(--text2)}
+
+/* ── DIVIDER ── */
+.divider{align-items:center;justify-content:center;text-align:center;gap:18px;background:linear-gradient(140deg,#0A0E18 0%,#0D0F14 50%,#0A0C08 100%)}
+.divider-badge{font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.28);padding:6px 18px;border-radius:20px}
+.divider-title{font-family:var(--serif);font-size:clamp(44px,6.5vw,80px);color:var(--text);font-weight:700;line-height:1.1}
+.divider-quote{font-family:var(--serif);font-style:italic;font-size:clamp(15px,1.8vw,21px);color:var(--accent);max-width:680px}
+.divider-time{font-size:12px;color:var(--text2);font-weight:500;letter-spacing:.06em}
+
+/* ── HEADER ── */
+.hd{margin-bottom:28px;flex-shrink:0}
+.hd-tag{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:7px}
+.hd-title{font-family:var(--serif);font-size:clamp(26px,3.2vw,42px);color:var(--text);line-height:1.2;font-weight:600}
+.hd-sub{font-size:13px;color:var(--text2);margin-top:6px;line-height:1.5}
+
+/* ── ATOMS ── */
+.script{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 20px;font-size:clamp(12.5px,1.35vw,14.5px);line-height:1.75;color:var(--text3)}
+.script-label{font-size:9.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.script em{color:var(--accent);font-style:normal;font-weight:500}
+.script strong{color:var(--text);font-weight:600}
+
+.why{background:rgba(212,168,67,.05);border:1px solid rgba(212,168,67,.15);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.55}
+.why strong{color:var(--accent)}
+
+.alert{background:var(--danger-bg);border-left:3px solid var(--danger);border-radius:0 8px 8px 0;padding:11px 16px;font-size:12.5px;color:var(--danger-text);line-height:1.55}
+.alert strong{color:var(--danger-text)}
+
+.info{background:rgba(42,124,111,.07);border-left:3px solid var(--accent2);border-radius:0 8px 8px 0;padding:11px 16px;font-size:12.5px;color:#A8D4CE;line-height:1.55}
+.info strong{color:#A8D4CE}
+
+.rule{background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.22);border-radius:8px;padding:13px 20px;font-size:13.5px;font-weight:500;color:var(--accent);text-align:center;line-height:1.5}
+
+.mistake{background:rgba(139,46,46,.06);border:1px solid rgba(139,46,46,.2);border-radius:6px;padding:10px 14px;font-size:12px;color:#D9A0A0;line-height:1.55}
+.mistake strong{color:#E8C0C0}
+
+.card{background:var(--surface2);border-radius:10px;padding:16px 18px;border:1px solid rgba(255,255,255,.04)}
+
+/* GRID UTILS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:14px}
+.flex{display:flex;gap:12px}
+.flex-col{display:flex;flex-direction:column;gap:10px}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
+
+/* NUMBER LIST */
+.nlist{display:flex;flex-direction:column;gap:10px;list-style:none}
+.nlist li{display:flex;gap:14px;align-items:flex-start;background:var(--surface2);border-radius:8px;padding:13px 16px;border:1px solid rgba(255,255,255,.04)}
+.nlist li .n{font-family:var(--serif);font-size:22px;font-weight:700;color:var(--accent);min-width:26px;line-height:1;margin-top:1px}
+.nlist li .t{font-size:clamp(12px,1.35vw,14px);color:var(--text);line-height:1.5}
+.nlist li .t strong{color:var(--accent)}
+
+/* STEPPER */
+.stepper{display:flex;flex-direction:column;gap:8px}
+.step{display:flex;gap:14px;align-items:flex-start}
+.step-n{width:30px;height:30px;border-radius:50%;background:rgba(212,168,67,.12);border:1px solid var(--accent);color:var(--accent);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-body{flex:1}
+.step-body h4{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:4px}
+.conn{width:1px;background:rgba(212,168,67,.18);margin-left:14px;height:8px}
+
+/* LADDER */
+.ladder{display:flex;flex-direction:column;gap:8px}
+.ladder-row{display:flex;gap:12px}
+.ladder-n{width:34px;background:rgba(212,168,67,.09);border:1px solid rgba(212,168,67,.22);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--accent);flex-shrink:0}
+.ladder-body{flex:1;background:var(--surface2);border-radius:8px;padding:12px 15px;border:1px solid rgba(255,255,255,.04)}
+.ladder-body h4{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.ladder-body p{font-size:12px;color:var(--text2);line-height:1.5}
+.ladder-body .tag{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);margin-top:4px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:clamp(11.5px,1.25vw,13.5px)}
+.tbl th{background:rgba(212,168,67,.09);color:var(--accent);font-weight:600;font-size:12px;padding:11px 14px;text-align:left;border-bottom:2px solid rgba(212,168,67,.18)}
+.tbl td{padding:10px 14px;color:var(--text2);border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top;line-height:1.45}
+.tbl tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.tbl td strong{color:var(--text)}
+
+/* LEAD CARDS */
+.leads{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1}
+.lead{background:var(--surface2);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;border:1px solid rgba(255,255,255,.04)}
+.lead.cold{border-top:3px solid var(--accent3)}
+.lead.hot{border-top:3px solid var(--accent)}
+.lead.disq{border-top:3px solid var(--danger)}
+.lead-title{font-size:15px;font-weight:600;color:var(--text)}
+.lead ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.lead ul li{font-size:12px;color:var(--text2);line-height:1.4;padding-left:14px;position:relative}
+.lead ul li::before{content:'—';position:absolute;left:0;opacity:.5}
+.lead-action{margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);font-size:12px;font-weight:500;line-height:1.4}
+.lead.cold .lead-action{color:var(--accent3)}
+.lead.hot .lead-action{color:var(--accent)}
+.lead.disq .lead-action{color:var(--danger-text)}
+
+/* JOURNEY */
+.journey{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:14px}
+.jstep{background:var(--surface2);border-radius:7px;padding:10px 12px;font-size:10.5px;color:var(--text2);text-align:center;border:1px solid rgba(255,255,255,.04);flex:1;min-width:70px}
+.jstep .ji{font-size:16px;display:block;margin-bottom:4px}
+.jstep .jn{color:var(--text);font-weight:500;font-size:10.5px}
+.jarrow{color:var(--accent);font-size:13px;flex-shrink:0;padding:0 2px}
+.jbranch{display:flex;gap:8px;flex:2}
+.jb{flex:1;background:var(--surface2);border-radius:7px;padding:9px 10px;font-size:10px;text-align:center;border:1px solid rgba(255,255,255,.04)}
+.jb.c{border-top:2px solid var(--accent3)}
+.jb.h{border-top:2px solid var(--accent)}
+.jb-l{font-size:9px;font-weight:700;letter-spacing:.1em;margin-bottom:3px}
+.jb.c .jb-l{color:var(--accent3)}
+.jb.h .jb-l{color:var(--accent)}
+
+/* DIAGNÓSTICO */
+.leak{display:flex;gap:14px;align-items:flex-start;background:var(--surface2);border-radius:8px;padding:14px 16px;border-left:3px solid var(--danger);border-top:1px solid rgba(255,255,255,.04);border-right:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)}
+.leak-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.leak-body h4{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.leak-body p{font-size:12px;color:var(--text2);line-height:1.5}
+.leak-body .note{font-size:11px;color:var(--danger-text);margin-top:4px;font-style:italic}
+
+/* BIFURCATION */
+.bifur{display:flex;gap:14px;margin-top:8px}
+.bif{flex:1;background:var(--surface2);border-radius:8px;padding:12px 15px;font-size:12px;color:var(--text2);line-height:1.5;border-top:2px solid}
+.bif.c{border-color:var(--accent3)}
+.bif.h{border-color:var(--accent)}
+.bif-label{font-weight:600;margin-bottom:4px;font-size:12px}
+.bif.c .bif-label{color:var(--accent3)}
+.bif.h .bif-label{color:var(--accent)}
+
+/* ICP */
+.icp-g{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.icp-c{background:var(--surface2);border-radius:9px;padding:14px 15px;border:1px solid rgba(255,255,255,.04)}
+.icp-c .lbl{font-size:9.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:7px}
+.icp-c .val{font-size:clamp(11.5px,1.25vw,13px);color:var(--text);line-height:1.5}
+
+/* COMMIT */
+.commits{display:flex;flex-direction:column;gap:14px}
+.commit{display:flex;gap:18px;align-items:center;background:var(--surface2);border-radius:10px;padding:16px 20px;border:1px solid rgba(255,255,255,.05)}
+.commit-n{font-family:var(--serif);font-size:34px;font-weight:700;color:var(--accent);min-width:40px}
+.commit-t{font-size:clamp(13px,1.45vw,15px);color:var(--text);line-height:1.4}
+.commit-t strong{color:var(--accent)}
+
+/* CLOSING */
+.closing{justify-content:center;align-items:center;text-align:center;gap:18px;background:#0D0F14}
+.closing-line{width:44px;height:2px;background:var(--accent);border-radius:2px;margin:0 auto}
+.closing-q{font-family:var(--serif);font-size:clamp(22px,3.5vw,44px);color:var(--text);line-height:1.35;font-style:italic;max-width:760px}
+.closing-brand{font-size:12px;color:var(--text2);letter-spacing:.14em}
+
+/* HIGHLIGHT TAG */
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px}
+.tag.amber{background:rgba(212,168,67,.1);color:var(--accent);border:1px solid rgba(212,168,67,.25)}
+.tag.teal{background:rgba(42,124,111,.1);color:var(--accent2);border:1px solid rgba(42,124,111,.25)}
+.tag.red{background:rgba(139,46,46,.12);color:var(--danger-text);border:1px solid rgba(139,46,46,.3)}
+.tag.blue{background:rgba(91,141,184,.1);color:var(--accent3);border:1px solid rgba(91,141,184,.25)}
+
+/* ANNOTATION (inline callout) */
+.ann{display:flex;gap:8px;align-items:flex-start;padding:8px 12px;background:rgba(212,168,67,.04);border-radius:6px;margin-top:6px}
+.ann-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px}
+.ann-text{font-size:11.5px;color:var(--text2);line-height:1.5}
+.ann-text strong{color:var(--accent)}
+
+/* PRINT */
+@media print{
+  html,body{overflow:visible;height:auto}
+  #progress,#counter,.nav{display:none!important}
+  #deck{height:auto;position:static;overflow:visible}
+  .slide{position:relative;opacity:1!important;pointer-events:all!important;transform:none!important;page-break-after:always;height:100vh;min-height:580px}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="counter"></div>
+<button class="nav" id="prev">&#8592;</button>
+<button class="nav" id="next">&#8594;</button>
+
+<div id="deck">
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 1 — CAPA
+══════════════════════════════════════════════════ -->
+<div class="slide cover" id="s1">
+  <div class="cover-deco"><div class="cover-ring"></div><div class="cover-ring2"></div></div>
+  <span class="cover-eyebrow">FF.AI · Treinamento Comercial · 2026</span>
+  <h1 class="cover-title">Treinamento<br><em>Comercial</em></h1>
+  <p class="cover-sub">Dr. Rogério Troian &nbsp;·&nbsp; Nutrólogo &nbsp;·&nbsp; Goiânia</p>
+  <div class="cover-line"></div>
+  <div class="cover-tags">
+    <span class="cover-tag">Diagnóstico do processo atual</span>
+    <span class="cover-tag">Módulos 1 a 6 — Sistema completo</span>
+    <span class="cover-tag">Scripts comentados</span>
+    <span class="cover-tag">Próximo: Roleplay ao vivo</span>
+  </div>
+  <p class="cover-foot">Conduzido por Edu &nbsp;·&nbsp; Participantes: Dr. Rogério &amp; Karla</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 2 — O QUE MUDA DEPOIS DESSE TREINAMENTO
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s2">
+  <div class="hd">
+    <div class="hd-tag">Contexto</div>
+    <h2 class="hd-title">O que muda depois daqui</h2>
+    <p class="hd-sub">Esse treinamento não é sobre saber mais. É sobre fazer diferente — a partir de amanhã.</p>
+  </div>
+  <div class="body">
+    <div class="flex-col">
+      <div class="g2">
+        <div class="card">
+          <div class="tag amber" style="margin-bottom:10px">Antes</div>
+          <ul class="flex-col" style="gap:8px;list-style:none">
+            <li style="font-size:13px;color:var(--text2)">• A Clara passa preço para todo lead que chega</li>
+            <li style="font-size:13px;color:var(--text2)">• Lead frio e lead quente recebem o mesmo tratamento</li>
+            <li style="font-size:13px;color:var(--text2)">• O processo depende da boa vontade de cada pessoa</li>
+            <li style="font-size:13px;color:var(--text2)">• Paciente sai sem pagamento sem uma data definida</li>
+            <li style="font-size:13px;color:var(--text2)">• Indicação é orgânica — ocorre por acaso</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color:rgba(212,168,67,.15)">
+          <div class="tag teal" style="margin-bottom:10px">Depois</div>
+          <ul class="flex-col" style="gap:8px;list-style:none">
+            <li style="font-size:13px;color:var(--text)">• Lead frio vai para call. Lead quente vai para agendamento</li>
+            <li style="font-size:13px;color:var(--text)">• Preço só depois de construir valor</li>
+            <li style="font-size:13px;color:var(--text)">• O processo é maior do que qualquer pessoa</li>
+            <li style="font-size:13px;color:var(--text)">• Ninguém sai sem pagamento <strong>ou</strong> data e hora definidas</li>
+            <li style="font-size:13px;color:var(--text)">• Indicação é sistema — acontece sempre, com script</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rule" style="margin-top:6px">"Pessoas fazem a empresa funcionar. Processos fazem ela faturar."</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 3 — DIAGNÓSTICO: OS VAZAMENTOS
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s3">
+  <div class="hd">
+    <div class="hd-tag">Diagnóstico · Onde o dinheiro está saindo</div>
+    <h2 class="hd-title">Os Vazamentos do Processo Atual</h2>
+    <p class="hd-sub">Esses não são erros genéricos de clínica. São o que está acontecendo agora, nessa operação.</p>
+  </div>
+  <div class="body">
+    <div class="flex-col" style="gap:9px">
+      <div class="leak">
+        <span class="leak-icon">💸</span>
+        <div class="leak-body">
+          <h4>A Clara entrega preço para qualquer lead</h4>
+          <p>Hoje, todo lead que chega recebe o mesmo atendimento — independente de conhecer o Dr. Rogério ou ter vindo de anúncio. Leads frios que recebem preço viram curiosos. Curiosos não fecham.</p>
+          <span class="note">→ "Esse é o erro da sua IA" — diagnóstico da primeira reunião</span>
+        </div>
+      </div>
+      <div class="leak">
+        <span class="leak-icon">🚪</span>
+        <div class="leak-body">
+          <h4>Paciente sai da clínica sem comprometer</h4>
+          <p>Sem processo de fechamento estruturado, o "vou pensar" vira sumido. Sem data marcada, sem sinal, sem compromisso — o lead esfria e não volta.</p>
+        </div>
+      </div>
+      <div class="leak">
+        <span class="leak-icon">👥</span>
+        <div class="leak-body">
+          <h4>Indicação depende da boa vontade do paciente</h4>
+          <p>Não existe programa B2C. Quando alguém indica, é por acaso — não por processo. Cada paciente que sai sem ser pedido por 3 nomes é uma oportunidade perdida com custo de aquisição zero.</p>
+        </div>
+      </div>
+      <div class="leak">
+        <span class="leak-icon">📋</span>
+        <div class="leak-body">
+          <h4>O decisor aparece como surpresa no fechamento</h4>
+          <p>Sem formulário pré-consulta com a pergunta do decisor, a objeção "preciso falar com meu marido" chega sem prevenção. O processo hoje não cerca essa objeção antes que ela apareça.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 4 — A PROVA DE MÉTODO
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s4">
+  <div class="hd">
+    <div class="hd-tag">Diagnóstico · A prova de que processo muda resultado</div>
+    <h2 class="hd-title">Processo não é teoria.<br>Existe resultado validado.</h2>
+  </div>
+  <div class="body">
+    <div class="flex-col">
+      <div class="g2" style="gap:18px">
+        <div class="card" style="border-color:rgba(139,46,46,.25);background:rgba(24,14,14,.6);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:28px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--danger-text);margin-bottom:10px">Sem processo estruturado</div>
+          <div style="font-family:var(--serif);font-size:72px;font-weight:700;color:var(--danger-text);line-height:1">35%</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:8px">de conversão<br>na oferta do protocolo</div>
+        </div>
+        <div class="card" style="border-color:rgba(212,168,67,.3);background:rgba(18,16,8,.6);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:28px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:10px">Com processo — médico na oferta</div>
+          <div style="font-family:var(--serif);font-size:72px;font-weight:700;color:var(--accent);line-height:1">70–80%</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:8px">de conversão<br>na oferta do protocolo</div>
+        </div>
+      </div>
+      <div class="info" style="margin-top:4px">
+        <strong>Fonte:</strong> clínica do Dr. Fábio, com o mesmo método. O único fator de mudança foi o processo comercial estruturado — incluindo o médico assumindo a oferta do protocolo. Isso se replica.
+      </div>
+      <div class="card" style="margin-top:4px">
+        <p style="font-size:13px;color:var(--text2);line-height:1.6"><strong style="color:var(--text)">A pergunta que fica:</strong> quais são as opções de produto, serviço ou protocolo que o paciente tem hoje, além do protocolo de 90 dias? O processo que vamos construir aqui está pronto para receber novos produtos — mas essa é a camada seguinte.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 5 — DIVISOR MÓDULO 1
+══════════════════════════════════════════════════ -->
+<div class="slide divider" id="s5">
+  <span class="divider-badge">Módulo 1</span>
+  <h1 class="divider-title">O Sistema</h1>
+  <p class="divider-quote">"Antes de aprender os scripts, é preciso entender o mapa.<br>Quem não vê o todo não sabe onde está."</p>
+  <span class="divider-time">Jornada · ICP · Classificação · Papéis</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 6 — JORNADA DO PACIENTE
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s6">
+  <div class="hd">
+    <div class="hd-tag">Módulo 1 · Visão sistêmica</div>
+    <h2 class="hd-title">A Jornada Completa do Paciente</h2>
+    <p class="hd-sub">Cada etapa tem um responsável, um objetivo e um próximo passo esperado.</p>
+  </div>
+  <div class="body">
+    <div class="journey">
+      <div class="jstep"><span class="ji">📢</span><span class="jn">Aquisição</span><div style="font-size:9.5px;color:var(--text2);margin-top:3px">Google · Instagram · indicação</div></div>
+      <span class="jarrow">›</span>
+      <div class="jstep"><span class="ji">💬</span><span class="jn">WhatsApp comercial</span></div>
+      <span class="jarrow">›</span>
+      <div class="jstep" style="border-color:rgba(212,168,67,.2)"><span class="ji">🤖</span><span class="jn">IA Clara</span><div style="font-size:9.5px;color:var(--accent);margin-top:3px">triagem + bifurcação</div></div>
+      <span class="jarrow">›</span>
+      <div class="jbranch">
+        <div class="jb c"><div class="jb-l">🧊 FRIO</div><div style="color:var(--text2);font-size:9.5px">Call de Vendas<br>(Karla)</div></div>
+        <div class="jb h"><div class="jb-l">🔥 QUENTE</div><div style="color:var(--text2);font-size:9.5px">Agendamento<br>direto</div></div>
+      </div>
+      <span class="jarrow">›</span>
+      <div class="jstep"><span class="ji">💳</span><span class="jn">Pagamento antecipado</span><div style="font-size:9.5px;color:var(--text2);margin-top:3px">reserva da vaga</div></div>
+      <span class="jarrow">›</span>
+      <div class="jstep"><span class="ji">📋</span><span class="jn">Formulário pré-consulta</span></div>
+      <span class="jarrow">›</span>
+      <div class="jstep" style="border-color:rgba(212,168,67,.22)"><span class="ji">👨‍⚕️</span><span class="jn">Consulta</span><div style="font-size:9.5px;color:var(--accent);margin-top:3px">Dr. Rogério oferta o protocolo</div></div>
+      <span class="jarrow">›</span>
+      <div class="jstep"><span class="ji">✅</span><span class="jn">Karla fecha o pagamento</span></div>
+      <span class="jarrow">›</span>
+      <div class="jstep" style="border-color:rgba(42,124,111,.22)"><span class="ji">⭐</span><span class="jn">Pós-venda</span><div style="font-size:9.5px;color:var(--accent2);margin-top:3px">3 indicações + depoimento</div></div>
+    </div>
+    <div class="g2 mt8">
+      <div class="info">
+        <strong>Por que a ordem importa:</strong> cada etapa só funciona se a anterior foi bem feita. O formulário só previne a objeção do decisor se foi enviado antes da consulta. A Karla só fecha com autoridade se o Dr. Rogério fez a passagem correta.
+      </div>
+      <div class="why">
+        <strong>O gargalo atual:</strong> a bifurcação frio/quente não existe na operação de hoje. Todos os leads entram pela mesma porta — e saem com preço antes de estarem prontos para ouvir.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 7 — ICP
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s7">
+  <div class="hd">
+    <div class="hd-tag">Módulo 1 · Perfil do cliente ideal</div>
+    <h2 class="hd-title">ICP — Para Quem Estamos Vendendo</h2>
+    <p class="hd-sub">O ICP não é quem aparece — é quem você quer atrair. Isso muda a narrativa, o conteúdo e o filtro de triagem.</p>
+  </div>
+  <div class="body">
+    <div class="icp-g">
+      <div class="icp-c"><div class="lbl">Especialidades</div><div class="val">Reposição hormonal (M e F), hipertrofia, emagrecimento</div></div>
+      <div class="icp-c"><div class="lbl">Faixa etária</div><div class="val">30 a 55 anos</div></div>
+      <div class="icp-c"><div class="lbl">Estado civil</div><div class="val">Preferencialmente casado(a) — decisão compartilhada, maior estabilidade financeira</div></div>
+      <div class="icp-c"><div class="lbl">Perfil profissional</div><div class="val">Empresário(a) ou profissional liberal — valoriza performance e retorno rápido</div></div>
+      <div class="icp-c"><div class="lbl">O que valoriza</div><div class="val">Alta performance, resultado rápido, voltar ao trabalho mais rápido</div></div>
+      <div class="icp-c"><div class="lbl">Renda familiar mínima</div><div class="val">R$ 3.500<br><span style="font-size:11px;color:var(--text2)">protocolo R$9.000 em até 3× → ~R$3.000/mês</span></div></div>
+    </div>
+    <div class="alert mt12">
+      <strong>⚠️ NUNCA perguntar salário diretamente.</strong> Isso gera atrito e pode encerrar a conversa. A profissão já entrega o sinal. "Você trabalha com o quê?" qualifica sem constranger.
+    </div>
+    <div class="why mt8">
+      <strong>Por que isso importa para a narrativa:</strong> se o ICP é empresário ou profissional liberal, a linguagem certa é performance, resultado, retorno ao trabalho. Não é "cuidar da saúde" — é "operar no seu melhor nível".
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 8 — CLASSIFICAÇÃO DE LEADS
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s8">
+  <div class="hd">
+    <div class="hd-tag">Módulo 1 · A decisão mais importante</div>
+    <h2 class="hd-title">Classificação de Leads</h2>
+    <p class="hd-sub">Essa decisão acontece nos primeiros 3 minutos de conversa. Errar aqui compromete tudo que vem depois.</p>
+  </div>
+  <div class="body">
+    <div class="leads">
+      <div class="lead cold">
+        <div class="lead-title">🧊 Frio</div>
+        <ul>
+          <li>Não conhece o Dr. Rogério</li>
+          <li>Veio de anúncio, Google ou redes sociais</li>
+          <li>Conhece pelo Instagram mas nunca consultou</li>
+          <li>"Ouvi falar" — sem relação prévia</li>
+        </ul>
+        <div class="lead-action">→ <strong>Call de Vendas obrigatória (Karla)</strong><br><span style="color:var(--danger-text);font-size:11px">❌ Preço jamais passa antes da call</span></div>
+      </div>
+      <div class="lead hot">
+        <div class="lead-title">🔥 Quente / Morno</div>
+        <ul>
+          <li>Veio por indicação direta (paciente, familiar, parceiro)</li>
+          <li>Já se consultou com o Dr. Rogério</li>
+          <li>Já fez protocolo anteriormente</li>
+        </ul>
+        <div class="lead-action">→ Agendamento direto com pagamento antecipado<br><span style="color:var(--accent);font-size:11px">ou call opcional se ainda tiver dúvidas</span></div>
+      </div>
+      <div class="lead disq">
+        <div class="lead-title">❌ Desqualificado</div>
+        <ul>
+          <li>Paciente psiquiátrico</li>
+          <li>Criança abaixo de 12 anos</li>
+          <li>Doença fora da área (ex: neuroendócrino)</li>
+          <li>Só quer "bater papo", sem intenção real</li>
+        </ul>
+        <div class="lead-action">→ Redirecionar com respeito e encerrar o atendimento<br><span style="font-size:11px;color:var(--text2)">Não insistir. Não desperdiçar agenda.</span></div>
+      </div>
+    </div>
+    <div class="alert mt12">
+      <strong>⚠️ O erro mais caro:</strong> tratar lead frio como quente. Quem veio de anúncio e ouve preço antes de conhecer o trabalho do Dr. Rogério vira curioso — e some. Não é falta de dinheiro, é falta de confiança ainda não construída.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 9 — O PAPEL DE CADA UM
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s9">
+  <div class="hd">
+    <div class="hd-tag">Módulo 1 · Divisão de responsabilidades</div>
+    <h2 class="hd-title">O Papel de Cada Um</h2>
+    <p class="hd-sub">Clareza de papel = sem sobreposição, sem lacuna, sem desculpa.</p>
+  </div>
+  <div class="body">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>🤖 IA Clara</th>
+          <th>👩‍⚕️ Karla</th>
+          <th>👨‍⚕️ Dr. Rogério</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Triagem inicial 24h</td>
+          <td><strong>Call de Vendas</strong> — leads frios</td>
+          <td>Consulta médica</td>
+        </tr>
+        <tr>
+          <td>Classificação frio / quente</td>
+          <td>Agendamento e <strong>pagamento antecipado</strong></td>
+          <td><strong>Oferta do protocolo</strong> com autoridade</td>
+        </tr>
+        <tr>
+          <td>Envio do formulário pré-consulta</td>
+          <td>Escada de pagamento do protocolo</td>
+          <td><strong>Passagem de bastão</strong> para a Karla</td>
+        </tr>
+        <tr>
+          <td>Reativação de leads frios</td>
+          <td>Coleta de <strong>3 indicações</strong> + depoimento</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="g2 mt12">
+      <div class="why">
+        <strong>Por que a IA não fecha:</strong> IA qualifica e aquece. Fechar é humano — exige leitura de emoção, contorno de objeção em tempo real, e a autoridade que só vem de uma pessoa.
+      </div>
+      <div class="info">
+        <strong>Por que o Dr. Rogério não faz o follow-up:</strong> o tempo do médico vale pelo protocolo. Fazer follow-up comercial é subaproveitamento — e a Karla faz isso muito melhor.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 10 — DIVISOR MÓDULO 2
+══════════════════════════════════════════════════ -->
+<div class="slide divider" id="s10">
+  <span class="divider-badge">Módulo 2</span>
+  <h1 class="divider-title">Triagem e<br>Primeiro Contato</h1>
+  <p class="divider-quote">"O primeiro contato define o tom de tudo.<br>Quem erra aqui não tem segunda chance de qualificar."</p>
+  <span class="divider-time">Scripts da IA Clara · Bifurcação · Encaminhamento</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 11 — SCRIPT CLARA: ABERTURA E QUALIFICAÇÃO
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s11">
+  <div class="hd">
+    <div class="hd-tag">Módulo 2 · Script Clara — Abertura</div>
+    <h2 class="hd-title">O Primeiro Contato — Abertura e Origem</h2>
+    <p class="hd-sub">A Clara abre, qualifica a origem e faz a bifurcação. A Karla precisa entender esse processo para saber como o lead chega até ela.</p>
+  </div>
+  <div class="body">
+    <div class="script">
+      <div class="script-label">Script — Abertura</div>
+      "Oii! Aqui é a Clara, do consultório do Dr. Rogério Troian 😊<br>
+      Que bom ter você por aqui. Pra eu te ajudar do jeito certo, me conta rapidinho: <em>o que te trouxe a procurar o Dr. Rogério hoje?</em>"
+    </div>
+    <div class="ann"><div class="ann-dot"></div><div class="ann-text">A pergunta aberta abre espaço para o lead se revelar. Não é interrogatório — é receptividade.</div></div>
+    <div class="script mt12">
+      <div class="script-label">Script — Qualificação de origem</div>
+      "Entendi, faz total sentido. Só pra eu te direcionar certinho: <em>você já se consultou com o Dr. Rogério antes, ou conheceu o trabalho dele agora?</em> E como chegou até a gente: indicação de alguém, ou viu nas redes / no Google?"
+    </div>
+    <div class="ann"><div class="ann-dot"></div><div class="ann-text"><strong>Essa é a pergunta-chave da bifurcação.</strong> A resposta aqui define se o lead vai para a call (frio) ou para o agendamento direto (quente).</div></div>
+    <div class="bifur">
+      <div class="bif c"><div class="bif-label">🧊 Não conhece / veio de anúncio</div>→ FRIO · Call de Vendas obrigatória<br>Sem preço. Sem agendamento direto.</div>
+      <div class="bif h"><div class="bif-label">🔥 Já se consultou / por indicação</div>→ QUENTE · Agendamento direto<br>ou call opcional se ainda tiver dúvidas</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 12 — FLUXO OPERACIONAL: DO LEAD À CALL
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s12">
+  <div class="hd">
+    <div class="hd-tag">Módulo 2 · Fluxo operacional</div>
+    <h2 class="hd-title">Do Lead à Call — Como Funciona na Prática</h2>
+    <p class="hd-sub">A Clara qualifica. A Karla entra no momento certo. Esse timing é o que separa um lead que fecha de um lead que esfria.</p>
+  </div>
+  <div class="body">
+    <div class="flex-col">
+      <div class="g2">
+        <div class="card" style="border-color:rgba(212,168,67,.2)">
+          <div class="tag amber" style="margin-bottom:10px">⚡ Opção 1 — Karla disponível agora</div>
+          <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px">Karla monitora os atendimentos da Clara em tempo real. Quando vê um lead qualificado na conversa, entra na hora — sem agendar.</p>
+          <div class="script" style="font-size:12.5px">
+            <div class="script-label">Script — Karla entrando na conversa</div>
+            "Oi [nome]! Eu sou a Karla, consultora aqui do Dr. Rogério. Tô vendo que você tá conversando com a Clara agora — <em>posso te ligar rapidinho? São 5 minutinhos</em>, já te explico tudo direto."
+          </div>
+          <div class="ann mt8"><div class="ann-dot"></div><div class="ann-text" style="font-size:11.5px"><strong>Por que na hora?</strong> O lead está no pico do interesse agora — está no WhatsApp, acabou de interagir. Quanto mais tempo passa, mais esfria. Pegar o lead quente na hora tem conversão muito superior ao follow-up do dia seguinte.</div></div>
+        </div>
+        <div class="card">
+          <div class="tag blue" style="margin-bottom:10px">📅 Opção 2 — Karla não está disponível</div>
+          <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px">A Clara agenda a call com data e hora específicas. A Karla recebe o alerta e entra em contato no horário combinado.</p>
+          <div class="script" style="font-size:12.5px">
+            <div class="script-label">Script — Clara agendando</div>
+            "Nossa consultora Karla tem um horário disponível <em>[dia] às [hora]</em> pra uma conversa rápida de 5 minutinhos, sem custo. Já deixo reservado pra você?"
+          </div>
+          <div class="ann mt8"><div class="ann-dot"></div><div class="ann-text" style="font-size:11.5px"><strong>Data e hora específicas — sempre.</strong> "Quando você puder" não é compromisso. "Segunda às 10h" é. E a Karla cumpre religiosamente — credibilidade começa aqui.</div></div>
+        </div>
+      </div>
+      <div class="card" style="border-color:rgba(42,124,111,.2)">
+        <div class="tag teal" style="margin-bottom:10px">🎥 Transição de áudio para vídeo — dentro da ligação</div>
+        <div class="g2" style="gap:12px">
+          <div class="script" style="font-size:12px">
+            <div class="script-label">Script — Karla convertendo para vídeo</div>
+            "Tenho umas coisas que queria te mostrar e queria que você já me conhecesse — sou eu que vou te receber na clínica no dia da consulta. <em>Topa converter pra vídeo rapidinho?</em>"
+          </div>
+          <div class="why" style="font-size:12px">
+            <strong>Vídeo sempre que possível:</strong> permite leitura de expressão, cria conexão real e aumenta significativamente a conversão. Quem diz sim para o vídeo já está mais comprometido com a conversa — e com o processo.
+          </div>
+        </div>
+      </div>
+      <div class="alert">
+        <strong>⚠️ O erro mais comum:</strong> resolver tudo por texto no WhatsApp. Lead que só recebe mensagem fecha muito menos — e demora muito mais. Voz e vídeo criam confiança que texto não cria.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 13 — SCRIPT CLARA: LEAD FRIO
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s13">
+  <div class="hd">
+    <div class="hd-tag">Módulo 2 · Script Clara — Lead Frio</div>
+    <h2 class="hd-title">Encaminhamento do Lead Frio para a Call</h2>
+  </div>
+  <div class="body">
+    <div class="alert">
+      <strong>⚠️ Regra absoluta — sem exceção:</strong> lead frio não recebe preço. Nem de consulta. Nem de protocolo. Quem pergunta preço antes de conhecer não quer comprar — quer comparar. E vai para o mais barato.
+    </div>
+    <div class="script mt12">
+      <div class="script-label">Script — Encaminhamento para Call (Lead Frio)</div>
+      "Que ótimo que você se interessou pelo trabalho do Dr. Rogério!<br><br>
+      Antes da consulta, a gente tem uma etapa rápida que é uma <em>cortesia da clínica</em>: uma conversa de uns minutinhos com a nossa consultora, de preferência por vídeo, sem custo nenhum. É pra entender melhor o seu caso e você conhecer como o Dr. Rogério pode te ajudar de verdade.<br><br>
+      <em>Posso já deixar agendada pra você? Prefere hoje ainda ou amanhã?</em>"
+    </div>
+    <div class="g2 mt8">
+      <div>
+        <div class="ann"><div class="ann-dot"></div><div class="ann-text"><strong>"Cortesia da clínica"</strong> — enquadra como etapa do processo, não como venda. A pessoa aceita porque é "sem custo", não porque quer ser convencida.</div></div>
+        <div class="ann mt8"><div class="ann-dot"></div><div class="ann-text"><strong>"Prefere hoje ainda ou amanhã?"</strong> — fecha em data concreta. Nunca "quando você puder". Sem data, não existe compromisso.</div></div>
+      </div>
+      <div>
+        <div class="mistake">
+          <strong>Erro mais comum:</strong> quando o lead insiste em saber o preço, a Clara (ou a Karla) cede. Uma vez que o preço é passado para um lead frio, o encaminhamento para a call perde força — o lead já tem o que queria.
+        </div>
+        <div class="info mt8">
+          <strong>Se a Karla estiver disponível:</strong> oferecer a call na hora — é quando o lead está mais aquecido. Se não estiver: data e hora específicas, com confirmação.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 13 — SCRIPT CLARA: LEAD QUENTE
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s14">
+  <div class="hd">
+    <div class="hd-tag">Módulo 2 · Script Clara — Lead Quente</div>
+    <h2 class="hd-title">Encaminhamento do Lead Quente</h2>
+  </div>
+  <div class="body">
+    <div class="script">
+      <div class="script-label">Script — Agendamento para Lead Quente</div>
+      "Que bom que você já conhece o Dr. Rogério! Posso te oferecer duas opções:<br><br>
+      <em>1) Já garantir seu horário de consulta</em> — a vaga é confirmada com um pagamento antecipado, pra reservar a agenda dele.<br><br>
+      <em>2) Se ainda tiver alguma dúvida</em>, posso agendar uma conversa rápida com a nossa consultora, sem custo, pra você entender melhor como o Dr. Rogério pode te ajudar.<br><br>
+      Como você prefere seguir?"
+    </div>
+    <div class="g2 mt8">
+      <div>
+        <div class="ann"><div class="ann-dot"></div><div class="ann-text"><strong>Pagamento antecipado para quente também:</strong> confirma comprometimento. Quem paga aparece. Taxa de no-show cai drasticamente.</div></div>
+        <div class="ann mt8"><div class="ann-dot"></div><div class="ann-text"><strong>A call opcional para quentes inseguros:</strong> quem veio por indicação mas ainda tem dúvida pode ir para a Karla. O fluxo é o mesmo — o que muda é que ele já chega mais aquecido.</div></div>
+      </div>
+      <div>
+        <div class="rule" style="font-size:12.5px;text-align:left">
+          Regra de ouro: toda conversa termina com próximo passo concreto.<br><br>
+          Sem "fica à vontade pra pensar".<br>
+          Sem "me avisa quando quiser".<br>
+          Sem "qualquer hora que você puder".
+        </div>
+      </div>
+    </div>
+    <div class="why mt8">
+      <strong>Por que oferecer duas opções?</strong> A pessoa escolhe entre A e B — não entre "sim" e "não". Esse é um dos princípios mais básicos de condução comercial: dar escolha dentro do funil, nunca fora dele.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 14 — DIVISOR MÓDULO 3
+══════════════════════════════════════════════════ -->
+<div class="slide divider" id="s15">
+  <span class="divider-badge">Módulo 3</span>
+  <h1 class="divider-title">A Call<br>de Vendas</h1>
+  <p class="divider-quote">"O objetivo da call não é vender. É aquecer.<br>Quem aquece bem, fecha sem forçar."</p>
+  <span class="divider-time">Estrutura em 4 etapas · Scripts comentados · Erros mais comuns</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 15 — POR QUE A CALL EXISTE
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s16">
+  <div class="hd">
+    <div class="hd-tag">Módulo 3 · A lógica antes do script</div>
+    <h2 class="hd-title">Por Que a Call Existe</h2>
+    <p class="hd-sub">Antes de aprender o que falar, é preciso entender por que esse momento é o mais importante da jornada fria.</p>
+  </div>
+  <div class="body">
+    <div class="flex-col">
+      <div class="card" style="border-color:rgba(212,168,67,.15)">
+        <p style="font-size:13.5px;color:var(--text);line-height:1.7"><strong style="color:var(--accent)">A call não é uma ligação de venda.</strong> É uma conversa de diagnóstico que, quando bem conduzida, gera confiança suficiente para o lead querer se consultar. O fechamento da consulta acontece como consequência — não como objetivo declarado.</p>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="tag blue" style="margin-bottom:9px">Por que por vídeo (preferência)</div>
+          <p style="font-size:12.5px;color:var(--text2);line-height:1.6">Vídeo permite leitura de expressão. Você vê quando a pessoa hesita, quando se anima, quando está desconfiante. Esse dado é ouro na negociação — e só existe no vídeo. Quem resolve tudo por texto está negociando no escuro.</p>
+        </div>
+        <div class="card">
+          <div class="tag amber" style="margin-bottom:9px">Por que ligar na hora (preferência)</div>
+          <p style="font-size:12.5px;color:var(--text2);line-height:1.6">O lead está mais quente no momento em que está conversando com a Clara. Quanto mais tempo passa, mais esfria. Se a Karla estiver disponível, entrar na conversa na hora tem conversão muito maior do que agendar para depois.</p>
+        </div>
+      </div>
+      <div class="mistake">
+        <strong>O erro que todo mundo de clínica médica comete:</strong> resolver tudo por WhatsApp. Texto não transmite emoção, não cria conexão, não sustenta a autoridade que uma voz ou um rosto criam. Lead que só recebe texto fecha muito menos — e demora muito mais.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 16 — ESTRUTURA DA CALL EM 4 ETAPAS
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s17">
+  <div class="hd">
+    <div class="hd-tag">Módulo 3 · Script da Call — Karla</div>
+    <h2 class="hd-title">A Call de Vendas — 4 Etapas</h2>
+    <p class="hd-sub">Cada etapa tem um objetivo. Pular uma delas compromete a próxima.</p>
+  </div>
+  <div class="body">
+    <div class="stepper">
+      <div class="step">
+        <div class="step-n">1</div>
+        <div class="step-body">
+          <h4>Abertura — criar conforto (não começar vendendo)</h4>
+          <div class="script" style="margin-top:6px">
+            <div class="script-label">Script</div>
+            "Oi [nome], tudo bem? Eu sou a Karla, consultora aqui do consultório do Dr. Rogério. Essa conversa é uma <em>cortesia da clínica, sem custo</em>, pra eu entender o seu momento e te explicar como o Dr. Rogério trabalha. <em>Pode ser?</em>"
+          </div>
+          <div class="ann mt8"><div class="ann-dot"></div><div class="ann-text"><strong>"Pode ser?"</strong> — micro-comprometimento. A pessoa diz sim para continuar a conversa. Pequenos sins constroem o sim grande.</div></div>
+        </div>
+      </div>
+      <div class="conn"></div>
+      <div class="step">
+        <div class="step-n">2</div>
+        <div class="step-body">
+          <h4>Diagnóstico — ouvir antes de falar qualquer coisa</h4>
+          <div class="script" style="margin-top:6px">
+            <div class="script-label">Perguntas-chave</div>
+            "<em>Me conta o que está te incomodando hoje e o que você gostaria de mudar.</em>"<br>
+            "Há quanto tempo isso te acompanha? Já tentou resolver de outras formas?"<br>
+            "<em>O que mudaria na sua vida — no seu trabalho, na sua rotina — se isso fosse resolvido?</em>"
+          </div>
+          <div class="ann mt8"><div class="ann-dot"></div><div class="ann-text">A última pergunta é a mais importante. A resposta é o argumento de valor que a Karla vai usar na Etapa 3 — e o Dr. Rogério vai usar na consulta.</div></div>
+        </div>
+      </div>
+      <div class="conn"></div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <div class="step-body">
+          <h4>Construção de valor — só depois de entender o problema</h4>
+          <div class="script" style="margin-top:6px">
+            <div class="script-label">Script</div>
+            "O Dr. Rogério é especialista em [reposição hormonal / emagrecimento / performance], e já ajudou pessoas com um perfil muito parecido com o seu a [resultado que a pessoa declarou querer]. O trabalho dele não é uma consulta solta: <em>é um acompanhamento estruturado pra te levar até o resultado.</em>"
+          </div>
+        </div>
+      </div>
+      <div class="conn"></div>
+      <div class="step">
+        <div class="step-n">4</div>
+        <div class="step-body">
+          <h4>Convite para consulta com pagamento antecipado</h4>
+          <div class="script" style="margin-top:6px">
+            <div class="script-label">Script</div>
+            "O próximo passo é a consulta com ele. Pra reservar a agenda do Dr. Rogério, a consulta é com pagamento antecipado — que garante o seu horário. <em>Posso já deixar reservado? Tenho [opção A] e [opção B].</em>"
+          </div>
+          <div class="ann mt8"><div class="ann-dot"></div><div class="ann-text"><strong>Valor só é mencionado na Etapa 4</strong> — depois de entender o problema e construir valor. Nunca antes. Se o lead perguntar antes, redirecione: "O valor depende do protocolo que o Dr. Rogério vai indicar pra você — é exatamente isso que a gente vai mapear."</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 17 — FORMULÁRIO PRÉ-CONSULTA
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s18">
+  <div class="hd">
+    <div class="hd-tag">Módulo 3 · Ferramenta estratégica</div>
+    <h2 class="hd-title">O Formulário Pré-Consulta</h2>
+    <p class="hd-sub">Não é burocracia. É uma ferramenta com três funções estratégicas — cada seção tem um propósito comercial claro.</p>
+  </div>
+  <div class="body">
+    <div class="g3">
+      <div class="card" style="border-top:2px solid var(--accent2)">
+        <div class="lbl" style="color:var(--accent2);font-size:9.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px">Seção 1 · Médica</div>
+        <p style="font-size:12.5px;color:var(--text2);line-height:1.55">• Motivo do tratamento<br>• Medicamentos em uso<br>• Histórico médico relevante</p>
+        <div class="why mt8" style="font-size:11.5px">O Dr. Rogério chega na consulta já sabendo o que esperar — a consulta é mais eficiente e a oferta mais direcionada.</div>
+      </div>
+      <div class="card" style="border-top:2px solid var(--accent)">
+        <div class="lbl" style="font-size:9.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:8px">Seção 2 · Experiência</div>
+        <p style="font-size:12.5px;color:var(--text2);line-height:1.55">• Preferências musicais<br>• Gostos alimentares<br>• Bebida preferida</p>
+        <div class="why mt8" style="font-size:11.5px">Quando o paciente chega e a clínica estava preparada para ele, o encantamento acontece antes da consulta. Decisão de compra começa na experiência.</div>
+      </div>
+      <div class="card" style="border-top:2px solid #E8A870">
+        <div class="lbl" style="font-size:9.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#E8A870;margin-bottom:8px">Seção 3 · Decisor ★</div>
+        <p style="font-size:12.5px;color:var(--text2);line-height:1.55">"Quem participa das suas decisões importantes vai poder te acompanhar na consulta?"</p>
+        <div class="alert mt8" style="font-size:11.5px">
+          <strong>Esta pergunta derruba antecipadamente a objeção "preciso falar com meu marido".</strong> Na hora do fechamento: "Mas você já disse que [nome] poderia acompanhar — posso ligar pra ele agora?"
+        </div>
+      </div>
+    </div>
+    <div class="info mt12">
+      <strong>Enviado automaticamente pela IA</strong> após o agendamento. A Karla não precisa lembrar — o processo cuida disso. O que a Karla precisa é saber usar as respostas do formulário na conversa de fechamento.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 18 — DIVISOR MÓDULO 4
+══════════════════════════════════════════════════ -->
+<div class="slide divider" id="s19">
+  <span class="divider-badge">Módulo 4</span>
+  <h1 class="divider-title">O Médico<br>como Alavanca</h1>
+  <p class="divider-quote">"35% para 70–80% com um único fator.<br>A autoridade médica é o maior ativo comercial da clínica."</p>
+  <span class="divider-time">Para Dr. Rogério e Karla · Técnico + Humano · Passagem de bastão</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 19 — POR QUE O MÉDICO CONVERTE MAIS
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s20">
+  <div class="hd">
+    <div class="hd-tag">Módulo 4 · O ângulo técnico</div>
+    <h2 class="hd-title">Por Que o Médico Converte Mais</h2>
+    <p class="hd-sub">Não é intuição. Existem dois motivos precisos e replicáveis por trás do dado.</p>
+  </div>
+  <div class="body">
+    <div class="flex-col">
+      <div class="card" style="border-color:rgba(212,168,67,.2);padding:20px">
+        <div class="tag amber" style="margin-bottom:12px">Motivo 1 — Autoridade de conteúdo</div>
+        <p style="font-size:13.5px;color:var(--text);line-height:1.7">Quem mais sabe sobre o protocolo é quem o idealiza. O Dr. Rogério conhece cada componente, cada indicação, cada resultado esperado. Quando ele fala do protocolo, não é script — é convicção. E convicção fecha. Consultor repete o que foi ensinado. Médico fala do que entende.</p>
+      </div>
+      <div class="card" style="border-color:rgba(42,124,111,.2);padding:20px">
+        <div class="tag teal" style="margin-bottom:12px">Motivo 2 — Inibição de objeção</div>
+        <p style="font-size:13.5px;color:var(--text);line-height:1.7">A pessoa tem muito menos coragem de dizer "não" para o médico do que para um consultor. Na frente do Dr. Rogério, objeções que seriam ditas com facilidade para a Karla ficam represadas. Isso cria uma janela de condução — e o médico que souber conduzir nessa janela fecha com muito mais frequência.</p>
+      </div>
+      <div class="mistake">
+        <strong>O custo de não fazer:</strong> quando o Dr. Rogério não oferta ativamente o protocolo — ou oferta sem convicção —, o paciente sai da consulta sem comprometimento. A Karla herda a objeção que o médico poderia ter resolvido. O fechamento fica muito mais difícil.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 20 — O ÂNGULO HUMANO
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s21">
+  <div class="hd">
+    <div class="hd-tag">Módulo 4 · O ângulo humano</div>
+    <h2 class="hd-title">Não é Venda. É Cuidado Completo.</h2>
+    <p class="hd-sub">Para muitos médicos, falar de valor financeiro é desconfortável. Essa perspectiva muda isso.</p>
+  </div>
+  <div class="body">
+    <div class="flex-col">
+      <div class="card" style="border-color:rgba(212,168,67,.15);padding:22px">
+        <p style="font-family:var(--serif);font-size:18px;color:var(--text);line-height:1.6;font-style:italic">"Quando você acredita que o protocolo é a melhor solução para aquele paciente, e deixa isso claro — não com palavras de venda, mas com a convicção de quem conhece o tratamento — o paciente decide. Você não está vendendo. Você está completando o cuidado."</p>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="tag red" style="margin-bottom:9px">Oferta sem convicção</div>
+          <p style="font-size:12.5px;color:var(--text2);line-height:1.6">"Bom, existe o protocolo de 90 dias, se você tiver interesse... mas você pode também só fazer a consulta e a gente vê como fica." — Essa frase abre a porta para o paciente sair sem comprometer.</p>
+        </div>
+        <div class="card" style="border-color:rgba(212,168,67,.12)">
+          <div class="tag amber" style="margin-bottom:9px">Oferta com convicção</div>
+          <p style="font-size:12.5px;color:var(--text);line-height:1.6">"[Nome], pelo que você me descreveu, o protocolo de 90 dias é o caminho. Não uma consulta avulsa — um acompanhamento estruturado que vai te levar ao resultado que você disse que quer. A Karla vai te apresentar as condições." — Não há brecha.</p>
+        </div>
+      </div>
+      <div class="g2" style="gap:12px">
+        <div class="why">
+          <strong>O Dr. Rogério pode — e deve — apresentar o orçamento.</strong> O paciente acaba de sair encantado da consulta. Esse é o momento de maior receptividade. A autoridade médica torna mais fácil definir prioridades, apresentar o valor do protocolo e conduzir o paciente aos próximos passos — sem que isso pareça venda. Parece cuidado com clareza.
+        </div>
+        <div class="info">
+          <strong>Como dividir o fechamento:</strong> o Dr. Rogério apresenta o protocolo, o valor e as condições gerais. A Karla entra para operacionalizar — parcelamento, sinal, data. Cada um no que faz melhor. O paciente encantado aceita o orçamento do médico com muito menos resistência do que aceitaria de um consultor.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 21 — PASSAGEM DE BASTÃO
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s22">
+  <div class="hd">
+    <div class="hd-tag">Módulo 4 · O momento mais importante da consulta</div>
+    <h2 class="hd-title">A Passagem de Bastão</h2>
+    <p class="hd-sub">Esse momento define se a Karla assume com autoridade ou herda uma objeção. A diferença está em como o Dr. Rogério faz a transferência — e se faz na frente do paciente.</p>
+  </div>
+  <div class="body">
+    <div class="script">
+      <div class="script-label">Script — Dr. Rogério para Karla (dito na frente do paciente)</div>
+      "[Nome], pelo que a gente conversou aqui, o protocolo indicado para você é o de 90 dias. <em>A Karla vai te apresentar as condições e a melhor forma de começar.</em>"
+    </div>
+    <div class="g2 mt8">
+      <div>
+        <div class="ann"><div class="ann-dot"></div><div class="ann-text"><strong>Por que "na frente do paciente"?</strong> A autoridade do médico é transferida para a Karla nesse momento. O paciente ouve do Dr. Rogério que o próximo passo é com ela — e ela assume com toda a credibilidade do médico atrás dela.</div></div>
+        <div class="ann mt8"><div class="ann-dot"></div><div class="ann-text"><strong>"Protocolo de 90 dias"</strong> — nomeado como único e completo. Não "o pacote" ou "o tratamento". Nomenclatura específica reforça que é uma solução estruturada, não uma oferta genérica.</div></div>
+      </div>
+      <div>
+        <div class="mistake">
+          <strong>Passagem errada:</strong> "Karla, pode falar com o [nome] sobre os valores?" — isso posiciona a Karla como a cobradora, não como a consultora. A autoridade fica com o médico e a objeção vai toda para ela.
+        </div>
+        <div class="info mt8">
+          <strong>O que o Dr. Rogério faz antes de chamar a Karla:</strong> apresenta o protocolo como solução médica, antecipa as objeções principais (tempo, resultado, "vou pensar") dentro da consulta. A Karla recebe o paciente já preparado.
+        </div>
+      </div>
+    </div>
+    <div class="rule mt8">"A passagem de bastão na frente do paciente não é protocolo de etiqueta. É o mecanismo que transfere confiança."</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 22 — DIVISOR MÓDULO 5
+══════════════════════════════════════════════════ -->
+<div class="slide divider" id="s23">
+  <span class="divider-badge">Módulo 5</span>
+  <h1 class="divider-title">O Fechamento</h1>
+  <p class="divider-quote">"A escada de pagamento não é sobre dar desconto.<br>É sobre encontrar o caminho do sim."</p>
+  <span class="divider-time">Escada de pagamento · Regra de saída · Scripts de objeção</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 23 — ESCADA DE PAGAMENTO
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s24">
+  <div class="hd">
+    <div class="hd-tag">Módulo 5 · Script Karla — Fechamento</div>
+    <h2 class="hd-title">A Escada de Pagamento</h2>
+    <p class="hd-sub">Karla começa no degrau 1 e só desce quando há objeção real. Cada degrau tem uma lógica — não é improviso.</p>
+  </div>
+  <div class="body">
+    <div class="ladder">
+      <div class="ladder-row">
+        <div class="ladder-n">1</div>
+        <div class="ladder-body">
+          <h4>À vista ou parcelado no cartão — primeira oferta sempre</h4>
+          <p>R$9.000 à vista ou 12× de R$900 no cartão. O à vista já tem o desconto embutido implicitamente (sem juros da máquina). Esse é o padrão — não a exceção.</p>
+          <div class="tag amber" style="margin-top:6px">→ Objetivo: fechar aqui. A maioria dos quentes fecha no Degrau 1.</div>
+        </div>
+      </div>
+      <div class="ladder-row">
+        <div class="ladder-n">2</div>
+        <div class="ladder-body">
+          <h4>Prazo de 48h + bônus — quando há hesitação</h4>
+          <p>Mantém as condições por 48 horas + bônus concreto (aplicação de vitaminas, por exemplo) para fechar agora. O bônus é real e entregável — não uma promessa vaga.</p>
+          <div class="tag teal" style="margin-top:6px">→ Cria urgência legítima. "Essa condição só vale até [dia, hora]."</div>
+        </div>
+      </div>
+      <div class="ladder-row">
+        <div class="ladder-n">3</div>
+        <div class="ladder-body">
+          <h4>Sinal — quando a objeção persiste</h4>
+          <p>R$3.000 ou 30% para garantir a vaga e iniciar. Parcelável no cartão. Política: vira crédito na clínica em caso de desistência — não devolução, não prejuízo.</p>
+          <div class="tag blue" style="margin-top:6px">→ "Para a gente já garantir tudo e eu comprar os materiais do protocolo."</div>
+        </div>
+      </div>
+      <div class="ladder-row">
+        <div class="ladder-n">4</div>
+        <div class="ladder-body">
+          <h4>Data e hora específicas — último recurso</h4>
+          <p>Agendar data e hora para Karla retomar. Não "quando você puder". Não "me liga quando decidir". Data e hora específicas — e cumprir religiosamente.</p>
+          <div class="tag red" style="margin-top:6px">→ Só chegar aqui se os três primeiros falharam. E mesmo assim: compromisso com data.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 24 — REGRA DE SAÍDA E OBJEÇÕES
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s25">
+  <div class="hd">
+    <div class="hd-tag">Módulo 5 · A regra inviolável + scripts de objeção</div>
+    <h2 class="hd-title">Regra de Saída e Como Lidar com Objeções</h2>
+  </div>
+  <div class="body">
+    <div class="rule" style="font-size:14px;padding:16px 22px">
+      ⚠️ O paciente só sai da clínica com <strong>pagamento feito</strong> (parcial ou total) <strong>OU</strong> com <strong>data e hora definidas</strong> para continuar a conversa.<br>
+      <span style="font-size:12px;opacity:.75;display:block;margin-top:6px">Sem essas duas opções, não existe encerramento. "Vou pensar" não é resposta — é o começo do script de fechamento.</span>
+    </div>
+    <div class="g2 mt12">
+      <div class="flex-col">
+        <div class="card">
+          <div class="tag red" style="margin-bottom:9px">Objeção: "Vou pensar"</div>
+          <div class="script" style="font-size:12px">
+            "Entendo completamente. Antes de você ir, me conta: <em>o que falta pra você tomar essa decisão hoje?</em> Porque se for algo que eu posso resolver agora, a gente não precisa adiar."
+          </div>
+          <div class="ann mt6"><div class="ann-dot"></div><div class="ann-text" style="font-size:11px">Essa pergunta revela a objeção real. "Vou pensar" é sempre sobre outra coisa — preço, decisor, incerteza. Identificar qual é o trabalho que vem depois.</div></div>
+        </div>
+        <div class="card">
+          <div class="tag red" style="margin-bottom:9px">Objeção: "Preciso falar com meu marido"</div>
+          <div class="script" style="font-size:12px">
+            "Faz todo sentido. No formulário você havia dito que [nome] poderia te acompanhar — <em>seria possível ligar pra ele agora rapidinho?</em> Assim a gente já resolve tudo hoje."
+          </div>
+          <div class="ann mt6"><div class="ann-dot"></div><div class="ann-text" style="font-size:11px">O formulário pré-consulta preveniu isso. Usar a resposta do formulário para trazer o decisor agora — não depois.</div></div>
+        </div>
+      </div>
+      <div class="flex-col">
+        <div class="card">
+          <div class="tag red" style="margin-bottom:9px">Objeção: "Tá caro / não tenho como"</div>
+          <div class="script" style="font-size:12px">
+            "Entendo. Antes de a gente falar de valor — me conta: o que muda na sua vida, no seu trabalho, quando esse problema for resolvido? <em>Qual é o custo de continuar como está?</em>"
+          </div>
+          <div class="ann mt6"><div class="ann-dot"></div><div class="ann-text" style="font-size:11px">Reancoragem no valor antes de negociar preço. Quem vê o custo do problema aceita melhor o custo da solução.</div></div>
+        </div>
+        <div class="card" style="border-color:rgba(212,168,67,.15)">
+          <div class="tag amber" style="margin-bottom:9px">Se mesmo assim não fechar</div>
+          <div class="script" style="font-size:12px">
+            "Tudo bem, [nome]. Na [dia da semana], às [hora específica], eu entro em contato com você pra continuar essa conversa. Pode ser?"
+          </div>
+          <div class="ann mt6"><div class="ann-dot"></div><div class="ann-text" style="font-size:11px"><strong>Nunca "te ligo qualquer hora."</strong> Dia e hora específicos. E cumprir — sem exceção. Credibilidade é feita de compromissos cumpridos.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 25 — DIVISOR MÓDULO 6
+══════════════════════════════════════════════════ -->
+<div class="slide divider" id="s26">
+  <span class="divider-badge">Módulo 6</span>
+  <h1 class="divider-title">Pós-venda<br>como Sistema</h1>
+  <p class="divider-quote">"Indicação não é favor. É processo.<br>E o momento certo é logo depois do pagamento."</p>
+  <span class="divider-time">3 indicações · Depoimento em vídeo · O momento certo</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 26 — PÓS-VENDA
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s27">
+  <div class="hd">
+    <div class="hd-tag">Módulo 6 · Script Karla — Pós-venda</div>
+    <h2 class="hd-title">Indicações e Depoimento — Com Script, Sempre</h2>
+    <p class="hd-sub">O momento ideal é logo após o pagamento — quando a confiança está no pico e a decisão acabou de ser validada. Esperar é perder o momento.</p>
+  </div>
+  <div class="body">
+    <div class="g2">
+      <div class="flex-col">
+        <div class="card" style="border-top:2px solid var(--accent)">
+          <div class="tag amber" style="margin-bottom:10px">👥 Coleta de 3 Indicações</div>
+          <div class="script" style="font-size:12.5px">
+            <div class="script-label">Script</div>
+            "[Nome], que bom ter você nessa jornada! Você conhece 2 ou 3 pessoas que também mereciam essa transformação? Pode ser da família, do trabalho, da academia. <em>Me passa os nomes que a gente cuida de tudo com o mesmo carinho.</em>"
+          </div>
+          <div class="ann mt8"><div class="ann-dot"></div><div class="ann-text" style="font-size:11.5px"><strong>3 nomes, não "alguém".</strong> Pedido específico tem 3× mais conversão que pedido genérico. A pessoa já pensa em alguém concreto — não em "alguma pessoa que eu conheço".</div></div>
+        </div>
+        <div class="why" style="font-size:12px">
+          <strong>Por que funciona:</strong> a pessoa acabou de tomar uma decisão que ela acredita ser boa. Quem acredita no que comprou quer que as pessoas que ama também tenham. A Karla apenas abre essa porta.
+        </div>
+      </div>
+      <div class="flex-col">
+        <div class="card" style="border-top:2px solid var(--accent2)">
+          <div class="tag teal" style="margin-bottom:10px">🎥 Depoimento em Vídeo + Google</div>
+          <div class="script" style="font-size:12.5px">
+            <div class="script-label">Script</div>
+            "Posso te pedir um favor rápido? Conta num vídeo curtinho o que te fez escolher o Dr. Rogério e como você está se sentindo agora. <em>Já deixei o link aqui no tablet.</em> E se puder deixar uma avaliação no Google, ajuda muita gente a conhecer o trabalho dele."
+          </div>
+          <div class="ann mt8"><div class="ann-dot"></div><div class="ann-text" style="font-size:11.5px"><strong>Tablet com link pronto na recepção.</strong> Sem fricção. Roteiro foca na <strong>história</strong> — o que motivou a decisão — não no antes/depois. Histórias convencem mais do que resultados.</div></div>
+        </div>
+        <div class="info" style="font-size:12px">
+          <strong>CRM de indicados:</strong> cada nome coletado entra num funil separado. A Karla entra em contato mencionando quem indicou — o lead já chega quente.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 27 — OS 3 COMPROMISSOS
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s28">
+  <div class="hd">
+    <div class="hd-tag">Encerramento · Padrões mínimos de operação</div>
+    <h2 class="hd-title">Os 3 Compromissos da Karla</h2>
+    <p class="hd-sub">Não são metas a perseguir. São o padrão mínimo — a partir de amanhã.</p>
+  </div>
+  <div class="body" style="display:flex;flex-direction:column;justify-content:center">
+    <div class="commits">
+      <div class="commit">
+        <div class="commit-n">1</div>
+        <div class="commit-t"><strong>Todo lead frio vai para a call</strong> — nunca recebe preço antes de ter passado pela conversa com a Karla. Sem exceção.</div>
+      </div>
+      <div class="commit">
+        <div class="commit-n">2</div>
+        <div class="commit-t"><strong>Todo paciente sai com pagamento feito</strong> (parcial ou total) ou com <strong>data e hora definidas</strong> para continuar. "Vou pensar" não encerra a conversa.</div>
+      </div>
+      <div class="commit">
+        <div class="commit-n">3</div>
+        <div class="commit-t"><strong>Todo cliente que paga</strong> recebe o pedido de 3 indicações e o convite para depoimento em vídeo — com script, sempre, logo após o pagamento.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 28 — PRÓXIMOS PASSOS
+══════════════════════════════════════════════════ -->
+<div class="slide" id="s29">
+  <div class="hd">
+    <div class="hd-tag">Encerramento · O que acontece depois daqui</div>
+    <h2 class="hd-title">Próximos Passos</h2>
+    <p class="hd-sub">O processo está desenhado. Agora vira execução.</p>
+  </div>
+  <div class="body">
+    <div class="flex-col" style="gap:10px">
+      <div class="card" style="display:flex;gap:16px;align-items:flex-start">
+        <span style="font-size:22px;flex-shrink:0">🤖</span>
+        <div><p style="font-size:13.5px;color:var(--text);font-weight:500;margin-bottom:4px">A IA Clara será reprogramada para o novo funil</p><p style="font-size:12px;color:var(--text2)">Bifurcação frio/quente com os scripts validados. Sem mais preço passado para lead frio.</p></div>
+      </div>
+      <div class="card" style="display:flex;gap:16px;align-items:flex-start">
+        <span style="font-size:22px;flex-shrink:0">📊</span>
+        <div><p style="font-size:13.5px;color:var(--text);font-weight:500;margin-bottom:4px">CRM montado com funil de indicados</p><p style="font-size:12px;color:var(--text2)">Cada nome coletado no pós-venda entra em rastreamento. Conversão por origem, por indicador.</p></div>
+      </div>
+      <div class="card" style="display:flex;gap:16px;align-items:flex-start">
+        <span style="font-size:22px;flex-shrink:0">📞</span>
+        <div><p style="font-size:13.5px;color:var(--text);font-weight:500;margin-bottom:4px">Karla começa a usar os scripts a partir de amanhã</p><p style="font-size:12px;color:var(--text2)">Com os modelos desse treinamento como referência. Sem esperar o processo "estar perfeito" — o processo melhora em campo.</p></div>
+      </div>
+      <div class="card" style="display:flex;gap:16px;align-items:flex-start;border-color:rgba(212,168,67,.2)">
+        <span style="font-size:22px;flex-shrink:0">🎯</span>
+        <div><p style="font-size:13.5px;color:var(--accent);font-weight:500;margin-bottom:4px">Próxima sessão: Roleplay ao vivo</p><p style="font-size:12px;color:var(--text2)">Karla traz os casos reais das primeiras semanas. Edu faz o papel do lead. Feedback imediato. O processo se afina com base em objeções reais — não em cenários hipotéticos.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 29 — ENCERRAMENTO
+══════════════════════════════════════════════════ -->
+<div class="slide closing" id="s30">
+  <div class="closing-line"></div>
+  <p class="closing-q">"O processo está pronto.<br>A equipe está treinada.<br>Agora é execução."</p>
+  <div class="closing-line"></div>
+  <p class="closing-brand">FF.AI &nbsp;·&nbsp; Dr. Rogério Troian &nbsp;·&nbsp; Goiânia &nbsp;·&nbsp; 2026</p>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+const TOTAL = 30;
+let cur = 1;
+const prog = document.getElementById('progress');
+const ctr = document.getElementById('counter');
+
+function go(n) {
+  n = Math.max(1, Math.min(TOTAL, n));
+  document.getElementById('s' + cur).classList.remove('active');
+  cur = n;
+  const el = document.getElementById('s' + cur);
+  el.classList.add('active');
+  // reset scroll
+  const b = el.querySelector('.body');
+  if (b) b.scrollTop = 0;
+  prog.style.width = (cur / TOTAL * 100) + '%';
+  ctr.textContent = cur + ' / ' + TOTAL;
+}
+
+document.getElementById('prev').onclick = () => go(cur - 1);
+document.getElementById('next').onclick = () => go(cur + 1);
+
+document.addEventListener('keydown', e => {
+  if (['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); go(cur + 1); }
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); go(cur - 1); }
+  else if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); }
+  else if (e.key === 'Home') go(1);
+  else if (e.key === 'End') go(TOTAL);
+});
+
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 50) go(cur + (dx < 0 ? 1 : -1));
+}, { passive: true });
+
+go(1);
+</script>
+</body>
+</html>
